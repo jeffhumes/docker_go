@@ -1,6 +1,8 @@
-Prerequisites:
-	- you must be logged in as dockrusr
-		-- 'sudo su - dockrusr'
+DOCKER_GO
+
+This project is intended to make setting up a docker instance easier by adding configuration
+files and settings that can be changed at build or run time.
+
 1. Edit go.conf
 	- update the instance name variable
 	- update the port numbers to meet your requirements
