@@ -136,7 +136,7 @@ generate_ssl_key(){
 
 generate_start_option_lines(){
 (
-        for MAPPING in `cat go_mappings.conf`
+        for MAPPING in `cat go_mappings.conf | grep -v ^#`
         do 
                 TYPE=`echo ${MAPPING} | awk -F \| '{print $1}'`
 
