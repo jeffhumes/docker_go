@@ -21,7 +21,6 @@ usage(){
 	echo " $0 <option>"
 	echo "    start - builds the container"
 	echo "    stop - stops and deletes the container"
-	echo "    create-dirs - creates any directories that are required or defined in dirs_to_create.conf"
 	echo "    copy-files - copy required files"
 	echo "    update-ports - update the standard port numbers in the configs to your selected ports"
 	echo "    exec bash- creates a shell in the container to look around"
@@ -59,17 +58,6 @@ create_required_directories(){
       		mkdir "${CERTS_DIR}"
 	fi
 
-	if [ -f "dirs_to_create.conf" ]
-	then
-		for MYDIR in `cat dirs_to_create.conf`
-		do
-			echo ${MYDIR}
-			if [ ! -d "${MYDIR}" ]; then
-				echo "Creating local directory: ${MYDIR}"
-      				mkdir -p "${MYDIR}"
-			fi
-		done
-	fi
 }
 
 get_required_files(){
@@ -308,9 +296,6 @@ else
 	--quiet \
 	.
 fi
-  ;;
-  create-dirs)
-	create_required_directories
   ;;
   copy-files)
    	create_required_directories
