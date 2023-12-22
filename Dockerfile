@@ -26,11 +26,12 @@ RUN if [[ "${EXTRA_PACKAGES}" = "true" ]]; then usermod -aG sudo ${USR}; fi
 RUN if [[ "${CHROME_REMOTE}" = "true" ]]; then echo "will install Chrome Remote Desktop"; fi
 RUN if [[ "${CHROME_REMOTE}" = "true" ]]; then curl -L -o chrome-remote-desktop_current_amd64.deb https://dl.google.com/linux/direct/chrome-remote-desktop_current_amd64.deb; fi
 RUN if [[ "${CHROME_REMOTE}" = "true" ]]; then export DEBIAN_FRONTEND=noninteractive && apt-get install --assume-yes ./chrome-remote-desktop_current_amd64.deb; fi
-RUN if [[ "${CHROME_REMOTE}" = "true" ]] $$ [[ "${CHROME_REMOTE_DESKTOP}" = "XFCE" ]]; then export DEBIAN_FRONTEND=noninteractive && apt install --assume-yes xfce4 desktop-base dbus-x11 xscreensaver; fi
-RUN if [[ "${CHROME_REMOTE}" = "true" ]] $$ [[ "${CHROME_REMOTE_DESKTOP}" = "CINNAMON" ]]; then export DEBIAN_FRONTEND=noninteractive && apt install --assume-yes cinnamon-core desktop-base dbus-x11; fi
-RUN if [[ "${CHROME_REMOTE}" = "true" ]] $$ [[ "${CHROME_REMOTE_DESKTOP}" = "GNOME" ]]; then export DEBIAN_FRONTEND=noninteractive && apt install --assume-yes  task-gnome-desktop; fi
-RUN if [[ "${CHROME_REMOTE}" = "true" ]] $$ [[ "${CHROME_REMOTE_DESKTOP}" = "GNOME_CLASSIC" ]]; then export DEBIAN_FRONTEND=noninteractive && apt install --assume-yes  task-gnome-desktop; fi
-RUN if [[ "${CHROME_REMOTE}" = "true" ]] $$ [[ "${CHROME_REMOTE_DESKTOP}" = "KDE_PLASMA" ]]; then export DEBIAN_FRONTEND=noninteractive && apt install --assume-yes  task-kde-desktop; fi
+RUN if [[ "${CHROME_REMOTE}" = "true" ]] && [[ "${CHROME_REMOTE_DESKTOP}" = "XFCE" ]]; then export DEBIAN_FRONTEND=noninteractive && apt install --assume-yes xfce4 desktop-base dbus-x11 xscreensaver; fi
+RUN if [[ "${CHROME_REMOTE}" = "true" ]] && [[ "${CHROME_REMOTE_DESKTOP}" = "CINNAMON" ]]; then export DEBIAN_FRONTEND=noninteractive && apt install --assume-yes cinnamon-core desktop-base dbus-x11; fi
+RUN if [[ "${CHROME_REMOTE}" = "true" ]] && [[ "${CHROME_REMOTE_DESKTOP}" = "CINNAMON" ]]; then export DEBIAN_FRONTEND=noninteractive && echo "exec /etc/X11/Xsession /usr/bin/cinnamon-session-cinnamon2d" > /etc/chrome-remote-desktop-session; fi
+RUN if [[ "${CHROME_REMOTE}" = "true" ]] && [[ "${CHROME_REMOTE_DESKTOP}" = "GNOME" ]]; then export DEBIAN_FRONTEND=noninteractive && apt install --assume-yes  task-gnome-desktop; fi
+RUN if [[ "${CHROME_REMOTE}" = "true" ]] && [[ "${CHROME_REMOTE_DESKTOP}" = "GNOME_CLASSIC" ]]; then export DEBIAN_FRONTEND=noninteractive && apt install --assume-yes  task-gnome-desktop; fi
+RUN if [[ "${CHROME_REMOTE}" = "true" ]] && [[ "${CHROME_REMOTE_DESKTOP}" = "KDE_PLASMA" ]]; then export DEBIAN_FRONTEND=noninteractive && apt install --assume-yes  task-kde-desktop; fi
  
 #RUN if [[ "${USR}" != "root"  ]]; then groupadd -g "${GID}" "${USR}"; else noop=1; fi
 #RUN if [[ "${USR}" != "root"  ]]; then useradd -u "${UID}" -g "${GID}" -d ${IMG_USR_HOME} -s ${IMG_USR_SHELL} ${USR}; else noop=1; fi
