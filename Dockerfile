@@ -36,8 +36,8 @@ RUN if [[ "${CHROME_REMOTE}" = "true"  ]]; then curl -L -o chrome-remote-desktop
 RUN if [[ "${CHROME_REMOTE}" = "true"  ]]; then DEBIAN_FRONTEND=noninteractive apt-get install --assume-yes ./chrome-remote-desktop_current_amd64.deb; fi
  
 # the following are TI specific, not needed outside TI
-RUN if [[ "${INSTALL_TYPE}" = "tomcat" && ${COMPANY}" = "TI" ]]; mkdir /usr/local/tomcat/tempcerts; fi
-RUN if [[ "${INSTALL_TYPE}" = "tomcat" && ${COMPANY}" = "TI" ]]; openssl s_client -connect ubid-prod.itg.ti.com:636 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /usr/local/tomcat/tempcerts/ubid-prod.itg.ti.com.crt; ls -lart /usr/local/tomcat/tempcerts; fi
-RUN if [[ "${INSTALL_TYPE}" = "tomcat" && ${COMPANY}" = "TI" ]]; cd $JAVA_HOME/conf/security && keytool -cacerts -storepass changeit -noprompt -trustcacerts -importcert -alias ldapcert -file /usr/local/tomcat/tempcerts/ubid-prod.itg.ti.com.crt; fi
+RUN if [[ "${INSTALL_TYPE}" = "tomcat" ]] -a [[ "${COMPANY}" = "TI" ]]; then mkdir /usr/local/tomcat/tempcerts; fi
+RUN if [[ "${INSTALL_TYPE}" = "tomcat" ]] -a [[ "${COMPANY}" = "TI" ]]; then openssl s_client -connect ubid-prod.itg.ti.com:636 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /usr/local/tomcat/tempcerts/ubid-prod.itg.ti.com.crt; ls -lart /usr/local/tomcat/tempcerts; fi
+RUN if [[ "${INSTALL_TYPE}" = "tomcat" ]] -a [[ "${COMPANY}" = "TI" ]]; then cd $JAVA_HOME/conf/security && keytool -cacerts -storepass changeit -noprompt -trustcacerts -importcert -alias ldapcert -file /usr/local/tomcat/tempcerts/ubid-prod.itg.ti.com.crt; fi
 
 USER ${USR}
