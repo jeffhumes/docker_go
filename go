@@ -283,6 +283,7 @@ if [ ${DOCKER_BUILD_VERBOSE} = "true" ]; then
 	--build-arg INSTALL_TYPE=${INSTALL_TYPE} \
 	--build-arg COMPANY=${COMPANY} \
 	--build-arg CHROME_REMOTE=${CHROME_REMOTE} \
+	--build-arg CHROME_REMOTE_DESKTOP=${CHROME_REMOTE_DESKTOP} \
 	--build-arg OS_UPDATES=${OS_UPDATES} \
 	--build-arg EXTRA_PACKAGES=${EXTRA_PACKAGES} \
 	--load \
@@ -298,6 +299,7 @@ else
 	--build-arg INSTALL_TYPE=${INSTALL_TYPE} \
 	--build-arg COMPANY=${COMPANY} \
 	--build-arg CHROME_REMOTE=${CHROME_REMOTE} \
+	--build-arg CHROME_REMOTE_DESKTOP=${CHROME_REMOTE_DESKTOP} \
 	--build-arg OS_UPDATES=${OS_UPDATES} \
 	--build-arg EXTRA_PACKAGES=${EXTRA_PACKAGES} \
 	--load \
