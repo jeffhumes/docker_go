@@ -19,13 +19,14 @@ export PERSIST_DIR="${BASE_DIR}/persist"
 usage(){
 	echo "Usage:"
 	echo " $0 <option>"
-	echo "    start - builds the container"
-	echo "    stop - stops and deletes the container"
-	echo "    copy-files - copy required files"
-	echo "    update-ports - update the standard port numbers in the configs to your selected ports"
-	echo "    exec bash- creates a shell in the container to look around"
-	echo "    restart - stop, remove, recreate and restart container"
-	echo "    build - build the docker image that will be run (reads Dockerfile)"
+	echo "    start		- starts the container in the background"
+	echo "    start-int	- builds the container in interactive mode"
+	echo "    restart	- restarts the container"
+	echo "    stop		- stops the container"
+	echo "    copy-files	- copy required files"
+	echo "    update-ports	- update the standard port numbers in the configs to your selected ports"
+	echo "    shell		- creates a shell in the container to look around"
+	echo "    build		- build the docker image that will be run (reads Dockerfile)"
 	exit 0
 }
 
@@ -208,7 +209,6 @@ case "$1" in
    get_wars
    remove_git
 
-
 	GENERATED_OPTIONS=$(generate_start_option_lines);
 	echo ${GENERATED_OPTIONS}
 
@@ -225,8 +225,30 @@ case "$1" in
   	--restart=always \
    	${INSTANCE_NAME}
 	fi
+  ;;
+  start-int)
+   create_required_directories
+   get_required_files
+   generate_ssl_key
+   get_wars
+   remove_git
 
+	GENERATED_OPTIONS=$(generate_start_option_lines);
+	echo ${GENERATED_OPTIONS}
 
+	if [ ${TESTING_GO_FILE} = "true" ]; then
+		echo "Not starting instance due to TESTING_GO_FILE set to true"
+	else
+	docker run -ti \
+	--user ${IMAGE_USER}  \
+	-v /etc/localtime:/etc/localtime:ro \
+	-e CATALINA_OPTS="-Dffw.home=/usr/local/tomcat/properties -DJENKINS_HOME=/usr/local/tomcat/jenkins/" \
+	-e JAVA_OPTS="-Duser.timezone=UTC" \
+	${GENERATED_OPTIONS} \
+	--name ${INSTANCE_NAME} \
+  	--restart=always \
+   	${INSTANCE_NAME}
+	fi
   ;;
   exec)
     docker exec -ti ${INSTANCE_NAME} ${@:2}
@@ -250,6 +272,9 @@ case "$1" in
     docker rm ${INSTANCE_NAME};
   ;;
   build)
+	echo "User: ${IMAGE_USER}"
+	echo "User Home: ${IMAGE_USER_HOME}"
+	echo "User Shell: ${IMAGE_USER_SHELL}"
 	echo "Chrome Remote Desktop Install? ${CHROME_REMOTE}"
 
 	if [ ${INSTANCE_NAME} = "CHANGE_ME" ]; then
