@@ -15,11 +15,14 @@ ARG CHROME_REMOTE_DESKTOP
 ARG OS_UPDATES
 ARG EXTRA_PACKAGES
 
+SHELL ["/bin/bash", "-c"]
+
 RUN if [[ "${OS_UPDATES}" = "true" ]] || [[ "${EXTRA_PACKAGES}" = "true" ]]; then apt-get update; fi 
 RUN if [[ "${OS_UPDATES}" = "true" ]]; then apt-get -y upgrade; fi 
 RUN if [[ "${EXTRA_PACKAGES}" = "true" ]]; then apt-get -y install sudo; fi
 RUN if [[ "${EXTRA_PACKAGES}" = "true" ]]; then apt-get -y install vim; fi
 RUN if [[ "${EXTRA_PACKAGES}" = "true" ]]; then apt-get -y install git; fi
+RUN if [[ "${EXTRA_PACKAGES}" = "true" ]]; then apt-get -y install curl; fi
 RUN if [[ "${EXTRA_PACKAGES}" = "true" ]]; then sed -i 's/%sudo.*$/%sudo  ALL=(ALL) NOPASSWD: ALL/g' /etc/sudoers; fi
 
 RUN if [[ "${USR}" != "root"  ]]; then groupadd -g "${GID}" "${USR}"; else noop=1; fi

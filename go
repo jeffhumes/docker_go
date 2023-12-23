@@ -250,6 +250,7 @@ case "$1" in
     docker rm ${INSTANCE_NAME};
   ;;
   build)
+	echo "Chrome Remote Desktop Install? ${CHROME_REMOTE}"
 
 	if [ ${INSTANCE_NAME} = "CHANGE_ME" ]; then
 		echo "-----------------------------------------------------------"
