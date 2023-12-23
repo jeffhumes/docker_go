@@ -1,5 +1,5 @@
 #tomcat image provided from docker.io
-FROM gitlab/gitlab-ce
+FROM ubuntu
 
 LABEL maintainer="jhumes@ti.com"
 
