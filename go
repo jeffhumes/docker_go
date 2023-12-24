@@ -222,7 +222,8 @@ case "$1" in
 	-e JAVA_OPTS="-Duser.timezone=UTC" \
 	${GENERATED_OPTIONS} \
 	--name ${INSTANCE_NAME} \
-  	--restart=always \
+	--hostname ${INSTANCE_NAME} \
+  	--restart=${DOCKER_RESTART_POLICY} \
    	${INSTANCE_NAME}
 	fi
   ;;
@@ -246,7 +247,8 @@ case "$1" in
 	-e JAVA_OPTS="-Duser.timezone=UTC" \
 	${GENERATED_OPTIONS} \
 	--name ${INSTANCE_NAME} \
-  	--restart=always \
+	--hostname ${INSTANCE_NAME} \
+  	--restart=${DOCKER_RESTART_POLICY} \
    	${INSTANCE_NAME}
 	fi
   ;;
