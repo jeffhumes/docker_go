@@ -59,14 +59,6 @@ RUN if [[ "${USR}" != "root"  ]]; then groupadd -g "${GID}" "${USR}"; else noop=
 RUN if [[ "${USR}" != "root"  ]]; then useradd -u "${UID}" -g "${GID}" -m -d ${IMG_USR_HOME} -s ${IMG_USR_SHELL} ${USR}; else noop=1; fi
 RUN if [[ "${USR}" != "root" ]]; then usermod -aG sudo ${USR}; fi
 
-RUN     if [[ "${CHROME_REMOTE}" = "true" ]]; then \
-                mkdir -p ${IMG_USR_HOME}/.config/chrome-remote-desktop && \
-                chown ${USR}:${USR} ${IMG_USR_HOME}/.config/chrome-remote-desktop && \
-                chmod a+rx ${IMG_USR_HOME}/.config/chrome-remote-desktop && \
-                touch ${IMG_USR_HOME}/.config/chrome-remote-desktop/host.json && \
-                touch ${IMG_USR_HOME}/.chrome-remote-desktop-session && \
-                echo "/usr/bin/pulseaudio --start" >> ${IMG_USR_HOME}/.chrome-remote-desktop-session && \
-                echo "startxfce4 :1030" >> ${IMG_USR_HOME}/.chrome-remote-desktop-session; fi
 
 
 
@@ -94,3 +86,31 @@ RUN if [[ "${INSTALL_TYPE}" = "tomcat" ]] && [[ "${COMPANY}" = "TI" ]]; then \
         keytool -cacerts -storepass changeit -noprompt -trustcacerts -importcert -alias ldapcert -file /usr/local/tomcat/tempcerts/ubid-prod.itg.ti.com.crt; fi
 
 USER ${USR}
+
+#CMD if [[ "${CHROME_REMOTE}" = "true" ]]; then \
+#                mkdir -p ${IMG_USR_HOME}/.config/chrome-remote-desktop && \
+#                chown ${USR}:${USR} ${IMG_USR_HOME}/.config/chrome-remote-desktop && \
+#                chmod a+rx ${IMG_USR_HOME}/.config/chrome-remote-desktop && \
+#                touch ${IMG_USR_HOME}/.config/chrome-remote-desktop/host.json && \
+#                touch ${IMG_USR_HOME}/.chrome-remote-desktop-session && \
+#                echo "/usr/bin/pulseaudio --start" >> ${IMG_USR_HOME}/.chrome-remote-desktop-session && \
+#                echo "startxfce4 :1030" >> ${IMG_USR_HOME}/.chrome-remote-desktop-session; fi
+
+ARG CHROME_REMOTE_CODE
+ARG CHROME_REMOTE_PIN
+ARG INSTANCE_NAME
+
+CMD \
+   DISPLAY= /opt/google/chrome-remote-desktop/start-host \
+   --code=${CHROME_REMOTE_CODE} \
+   --redirect-url="https://remotedesktop.google.com/_/oauthredirect" \
+   --name=${INSTANCE_NAME} \
+   --pin=$PIN; \
+   HOST_HASH=$(echo -n $HOSTNAME | md5sum | cut -c -32) && \
+   FILENAME=.config/chrome-remote-desktop/host#${HOST_HASH}.json && echo $FILENAME && \
+   cp .config/chrome-remote-desktop/host#*.json $FILENAME; \
+   sudo service chrome-remote-desktop stop && \
+   sudo service chrome-remote-desktop start && \
+   echo $HOSTNAME && \
+   sleep infinity & wait
+

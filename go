@@ -314,6 +314,7 @@ if [ ${DOCKER_BUILD_VERBOSE} = "true" ]; then
 	--build-arg CHROME_REMOTE_DESKTOP=${CHROME_REMOTE_DESKTOP} \
 	--build-arg OS_UPDATES=${OS_UPDATES} \
 	--build-arg EXTRA_PACKAGES=${EXTRA_PACKAGES} \
+	--build-arg INSTANCE_NAME=${INSTANCE_NAME} \
 	--load \
 	.
 else
@@ -330,6 +331,7 @@ else
 	--build-arg CHROME_REMOTE_DESKTOP=${CHROME_REMOTE_DESKTOP} \
 	--build-arg OS_UPDATES=${OS_UPDATES} \
 	--build-arg EXTRA_PACKAGES=${EXTRA_PACKAGES} \
+	--build-arg INSTANCE_NAME=${INSTANCE_NAME} \
 	--load \
 	--quiet \
 	.
