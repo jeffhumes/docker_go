@@ -1,0 +1,67 @@
+FROM ubuntu
+
+LABEL maintainer="jhumes@ti.com"
+
+SHELL ["/bin/bash", "-c"]
+
+ARG UID
+ARG GID
+ARG USR
+ARG IMG_USR_HOME
+ARG IMG_USR_SHELL
+ARG OS_UPDATES
+ARG EXTRA_PACKAGES
+ARG INSTALL_TYPE
+
+ARG CHROME_REMOTE
+ARG CHROME_REMOTE_DESKTOP
+
+RUN if [[ "${OS_UPDATES}" = "true" ]] || [[ "${EXTRA_PACKAGES}" = "true" ]]; then apt-get update; fi
+RUN if [[ "${OS_UPDATES}" = "true" ]]; then apt-get -y upgrade; fi
+RUN if [[ "${EXTRA_PACKAGES}" = "true" ]]; then apt-get -y install sudo vim git curl; fi
+RUN if [[ "${EXTRA_PACKAGES}" = "true" ]]; then sed -i 's/%sudo.*$/%sudo  ALL=(ALL) NOPASSWD: ALL/g' /etc/sudoers; fi
+
+
+RUN if [[ "${CHROME_REMOTE}" = "true" ]]; then \
+        curl -L -o chrome-remote-desktop_current_amd64.deb https://dl.google.com/linux/direct/chrome-remote-desktop_current_amd64.deb && \
+        export DEBIAN_FRONTEND=noninteractive && \
+         apt-get install --assume-yes ./chrome-remote-desktop_current_amd64.deb; fi
+
+RUN if [[ "${CHROME_REMOTE}" = "true" ]] && [[ "${CHROME_REMOTE_DESKTOP}" = "XFCE" ]]; then \
+        export DEBIAN_FRONTEND=noninteractive && \
+        apt install --assume-yes xfce4 desktop-base dbus-x11 xscreensaver && \
+        echo "exec /etc/X11/Xsession /usr/bin/xfce4-session" > /etc/chrome-remote-desktop-session; fi
+
+RUN if [[ "${CHROME_REMOTE}" = "true" ]] && [[ "${CHROME_REMOTE_DESKTOP}" = "CINNAMON" ]]; then \
+        export DEBIAN_FRONTEND=noninteractive && \
+        apt install --assume-yes cinnamon-core desktop-base dbus-x11 && \
+        echo "exec /etc/X11/Xsession /usr/bin/cinnamon-session-cinnamon2d" > /etc/chrome-remote-desktop-session; fi
+
+RUN if [[ "${CHROME_REMOTE}" = "true" ]] && [[ "${CHROME_REMOTE_DESKTOP}" = "GNOME" ]]; then \
+        export DEBIAN_FRONTEND=noninteractive && \
+        apt install --assume-yes task-gnome-desktop && \
+        echo "exec /etc/X11/Xsession /usr/bin/gnome-session" > /etc/chrome-remote-desktop-session && \
+        systemctl disable gdm3.service; fi
+
+RUN if [[ "${CHROME_REMOTE}" = "true" ]] && [[ "${CHROME_REMOTE_DESKTOP}" = "GNOME_CLASSIC" ]]; then \
+        export DEBIAN_FRONTEND=noninteractive && \
+        apt install --assume-yes task-gnome-desktop && \
+        echo "exec /etc/X11/Xsession /usr/bin/gnome-session-classic" > /etc/chrome-remote-desktop-session && \
+        systemctl disable gdm3.service; fi
+
+RUN if [[ "${CHROME_REMOTE}" = "true" ]] && [[ "${CHROME_REMOTE_DESKTOP}" = "KDE_PLASMA" ]]; then \
+        export DEBIAN_FRONTEND=noninteractive && \
+        apt install --assume-yes task-kde-desktop && \
+        echo "exec /etc/X11/Xsession /usr/bin/startplasma-x11" > /etc/chrome-remote-desktop-session; fi
+
+
+RUN if [[ "${USR}" != "root"  ]]; then groupadd -g "${GID}" "${USR}"; else noop=1; fi
+RUN if [[ "${USR}" != "root"  ]]; then useradd -u "${UID}" -g "${GID}" -m -d ${IMG_USR_HOME} -s ${IMG_USR_SHELL} ${USR}; else noop=1; fi
+RUN if [[ "${USR}" != "root" ]]; then usermod -aG sudo ${USR}; fi
+
+RUN     if [[ "${CHROME_REMOTE}" = "true" ]]; then \
+                mkdir -p ${IMG_USR_HOME}/.config/chrome-remote-desktop && \
+                chown ${USR}:${USR} ${IMG_USR_HOME}/.config/chrome-remote-desktop && \
+                chmod a+rx ${IMG_USR_HOME}/.config/chrome-remote-desktop && \
+                touch ${IMG_USR_HOME}/.config/chrome-remote-desktop/host.json && \
+                touch ${IMG_USR_HOME}/.chrome-remote-desktop-session && \
