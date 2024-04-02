@@ -3,7 +3,7 @@
 
 . go.conf
 
-for FILE in go Dockerfile dist/server.xml
+for FILE in go Dockerfile conf/server.xml
 do
 	echo "Updating instances of _INTERNAL_HTTP_PORT_ to ${INTERNAL_HTTP_PORT} in ${FILE}"
 	perl -i -ple "s/_INTERNAL_HTTP_PORT_/${INTERNAL_HTTP_PORT}/g" ${FILE}

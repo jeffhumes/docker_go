@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Server port="/8009" shutdown="SHUTDOWN">
+<Server port="/_TOMCAT_SHUTDOWN_PORT_" shutdown="SHUTDOWN">
   <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
   <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
   <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
@@ -13,10 +13,10 @@
               pathname="conf/tomcat-users.xml" />
   </GlobalNamingResources>
   <Service name="Catalina">
-    <Connector port="8089" protocol="HTTP/1.1"
+    <Connector port="_INTERNAL_HTTP_PORT_" protocol="HTTP/1.1"
                connectionTimeout="20000"
-               redirectPort="449" />
-<Connector port="8449"
+               redirectPort="_WELL_KNOWN_HTTPS_PORT_" />
+<Connector port="_INTERNAL_HTTPS_PORT_"
   SSLEnabled="true"
   clientAuth="false"
   maxThreads="150"
