@@ -163,6 +163,11 @@ generate_start_option_lines(){
                         echo "-p ${HOST_LOCATION}:${GUEST_LOCATION} "
 		fi
 
+                if [ ${TYPE} = "CLAIM" ]; then
+			PLEX_CLAIM_TOKEN=`echo ${MAPPING} | awk -F \| '{print $2}'`
+                        echo "-e PLEX_CLAIM=${PLEX_CLAIM_TOKEN}"
+		fi
+
 
 		
         done
