@@ -1,5 +1,5 @@
-ARG INSTALL_TYPE
-FROM ${INSTALL_TYPE}
+ARG INSTALL_FROM
+FROM ${INSTALL_FROM}
 
 LABEL maintainer="jhumes@ti.com"
 
@@ -13,10 +13,29 @@ ARG IMG_USR_SHELL
 ARG OS_UPDATES
 ARG EXTRA_PACKAGES
 ARG INSTALL_TYPE
+ARG USE_PROXY
+ARG PROXY_URL
 
-RUN if [[ "${OS_UPDATES}" = "true" ]] || [[ "${EXTRA_PACKAGES}" = "true" ]]; then apt-get update --option Acquire::HTTP::Proxy=http://webproxy.ext.ti.com:80; fi
-RUN if [[ "${OS_UPDATES}" = "true" ]]; then apt-get -y upgrade --option Acquire::HTTP::Proxy=http://webproxy.ext.ti.com:80; fi
-RUN if [[ "${EXTRA_PACKAGES}" = "true" ]]; then apt-get -y install sudo vim git curl net-tools --option Acquire::HTTP::Proxy=http://webproxy.ext.ti.com:80; fi
+#RUN if [[ "${OS_UPDATES}" = "true" ]] || [[ "${EXTRA_PACKAGES}" = "true" ]]; then \
+        #if [[ "${USE_PROXY}" = "true"]]; then \
+                #apt-get update --option Acquire::HTTP::Proxy=${PROXY_URL} \
+        #else \
+                #apt-get update \
+        #fi \
+#fi
+
+#-------------------------------
+# OS UPDATES?
+#-------------------------------
+RUN if [[ "${OS_UPDATES}" = "true" ]] || [[ "${EXTRA_PACKAGES}" = "true" ]] && [[ "${USE_PROXY}" = "true" ]]; then apt-get update --option Acquire::HTTP::Proxy=${PROXY_URL}; fi
+RUN if [[ "${OS_UPDATES}" = "true" ]] || [[ "${EXTRA_PACKAGES}" = "true" ]] && [[ "${USE_PROXY}" = "false" ]]; then apt-get update; fi
+
+RUN if [[ "${OS_UPDATES}" = "true" ]] && [[ "${USE_PROXY}" = "true" ]]; then apt-get -y upgrade --option Acquire::HTTP::Proxy=${PROXY_URL}; fi
+RUN if [[ "${OS_UPDATES}" = "true" ]] && [[ "${USE_PROXY}" = "false" ]]; then apt-get -y upgrade; fi
+
+RUN if [[ "${EXTRA_PACKAGES}" = "true" ]] && [[ "${USE_PROXY}" = "true" ]]; then apt-get -y install sudo vim git curl net-tools --option Acquire::HTTP::Proxy=${PROXY_URL}; fi
+RUN if [[ "${EXTRA_PACKAGES}" = "true" ]] && [[ "${USE_PROXY}" = "false" ]]; then apt-get -y install sudo vim git curl net-tools; fi
+
 RUN if [[ "${EXTRA_PACKAGES}" = "true" ]]; then sed -i 's/%sudo.*$/%sudo  ALL=(ALL) NOPASSWD: ALL/g' /etc/sudoers; fi
 
 RUN if [[ "${USR}" != "root"  ]]; then groupadd -g "${GID}" "${USR}"; else noop=1; fi

@@ -122,7 +122,7 @@ generate_ssl_key(){
 
 generate_start_option_lines(){
 (
-        for MAPPING in `cat go.conf | grep -v ^#`
+        for MAPPING in `cat go_mappings.conf | grep -v ^#`
         do
                 TYPE=`echo ${MAPPING} | awk -F \| '{print $1}'`
 
@@ -150,7 +150,7 @@ generate_start_option_lines(){
                         echo "-v ${FULL_HOST_LOCATION}:${GUEST_LOCATION} "
                 fi
 
-                if [ ${TYPE} = "PORT" ]; then
+                if [ ${FROM} = "PORT" ]; then
                         HOST_PORT=`echo ${MAPPING} | awk -F \| '{print $2}'`
                         GUEST_PORT=`echo ${MAPPING} | awk -F \| '{print $3}'`
                         echo "-p ${HOST_PORT}:${GUEST_PORT} "
@@ -173,7 +173,7 @@ generate_start_option_lines(){
 
 validate_go_mapping_lines(){
 (
-        for MAPPING in `cat go.conf | grep -v ^#`
+        for MAPPING in `cat go_mappings.conf | grep -v ^#`
         do 
                 TYPE=`echo ${MAPPING} | awk -F \| '{print $1}'`
 
@@ -205,13 +205,13 @@ validate_go_mapping_lines(){
 					echo "Auto create option for volume: ${AUTO_CREATE_VOLUME} set to TRUE, creating..."
 					docker volume create ${VOLUME_NAME}
 					if [ $? != 0 ]; then
-                                		echo "ERROR ---  Cannot auto-create volume listed in go.conf file: ${VOLUME_NAME} EXITING..."
+                                		echo "ERROR ---  Cannot auto-create volume listed in go_mappings.conf file: ${VOLUME_NAME} EXITING..."
                               			kill_script
 					else
 						echo "Volume: ${VOLUME_NAME} Created automatically"
 					fi
 				fi
-				echo "ERROR ---  Cannot locate volume listed in go.conf file: ${VOLUME_NAME}"
+				echo "ERROR ---  Cannot locate volume listed in go_mappings.conf file: ${VOLUME_NAME}"
 				kill_script
 			fi
 
@@ -221,7 +221,7 @@ validate_go_mapping_lines(){
 			HOST_LOCATION=`echo ${MAPPING} | awk -F \| '{print $2}'`
 			GUEST_LOCATION=`echo ${MAPPING} | awk -F \| '{print $3}'`
 			if [ ! -f ${HOST_LOCATION} ]; then
-				echo "ERROR ---  Cannot find war file listed in go.conf file: ${WARS_DIR}/${HOST_LOCATION}"
+				echo "ERROR ---  Cannot find war file listed in go_mappings.conf file: ${WARS_DIR}/${HOST_LOCATION}"
 				kill_script
 			fi
 
@@ -385,11 +385,13 @@ case "$1" in
 	--build-arg USR=${IMAGE_USER} \
 	--build-arg IMG_USR_HOME=${IMAGE_USER_HOME} \
 	--build-arg IMG_USR_SHELL=${IMAGE_USER_SHELL} \
-	--build-arg INSTALL_TYPE=${INSTALL_TYPE} \
+	--build-arg INSTALL_FROM=${INSTALL_FROM} \
 	--build-arg COMPANY=${COMPANY} \
 	--build-arg OS_UPDATES=${OS_UPDATES} \
 	--build-arg EXTRA_PACKAGES=${EXTRA_PACKAGES} \
 	--build-arg INSTANCE_NAME=${INSTANCE_NAME} \
+	--build-arg USE_PROXY=${USE_PROXY} \
+	--build-arg PROXY_URL=${PROXY_URL} \
 	.
 
 
